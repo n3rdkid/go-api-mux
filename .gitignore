@@ -1,0 +1,9 @@
+.env
+.vscode/
+.git
+serviceAccountKey.json
+.env.dev
+.env.prod
+.env.local
+serviceAccountKey.dev.json
+serviceAccountKey.prod.json
