@@ -1,20 +1,24 @@
 package main
 
 import (
+	"go-api-mux/controller"
+	"go-api-mux/repository"
+	"go-api-mux/router"
+	"go-api-mux/service"
 	"go-api-mux/utils"
-	"log"
-	"net/http"
 	"os"
+)
 
-	"github.com/gorilla/mux"
+var (
+	postRepository repository.PostRepository = repository.NewFireStoreRepository()
+	postService    service.PostService       = service.NewPostService(postRepository)
+	postController controller.PostController = controller.NewPostController(postService)
+	httpRouter     router.Router             = router.NewChiRouter()
 )
 
 func main() {
 	utils.LoadEnv()
-
-	router := mux.NewRouter()
-	router.HandleFunc("/posts", getPosts).Methods("GET")
-	router.HandleFunc("/posts", addPosts).Methods("POST")
-	log.Println("Server listening on port :", os.Getenv("SERVER_PORT"))
-	log.Fatalln(http.ListenAndServe(os.Getenv("SERVER_PORT"), router))
+	httpRouter.GET("/posts", postController.GetPosts)
+	httpRouter.POST("/posts", postController.AddPosts)
+	httpRouter.SERVE((os.Getenv("PORT")))
 }
